@@ -9,9 +9,13 @@ import SwiftUI
 
 @main
 struct dapperApp: App {
+    
+    @StateObject var userLogIn = UserLogIn()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(userLogIn)
         }
     }
 }
