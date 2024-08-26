@@ -14,12 +14,34 @@ struct CreateAccountView: View {
     @State var password = ""
     @State var reviewPassword = ""
     @State var showingAlert = false
+    @State var shouldShowImagePicker = false
+    @State var image: UIImage?
     
     var body: some View {
         NavigationStack{
             VStack(spacing: 100){
                 Spacer()
-                Image(systemName: "person.fill")
+                Spacer()
+                Button{
+                    shouldShowImagePicker.toggle()
+                }label: {
+                    VStack{
+                        if let image = self.image{
+                            Image(uiImage: image)
+                                .resizable()
+                                .frame(width: 128, height: 128)
+                                .scaledToFill()
+                                .clipShape(Circle())
+                        } else{
+                            Image(systemName: "person.fill")
+                                .font(.system(size: 64))
+                                .padding()
+                                .foregroundStyle(Color(.label))
+                        }
+                    }
+                    .overlay(RoundedRectangle(cornerRadius: 64)
+                        .stroke(Color.black, lineWidth: 3))
+                }
                 VStack{
                     
                     Group{
@@ -84,9 +106,12 @@ struct CreateAccountView: View {
                 Spacer()
             }
         }
+        .fullScreenCover(isPresented: $shouldShowImagePicker, onDismiss: nil, content: {
+            ImagePicker(image: $image)
+        })
         
     }
-    
+
     @State var loginStatusMessage = ""
     
     private func createNewAccount(){
@@ -102,16 +127,37 @@ struct CreateAccountView: View {
             
             self.loginStatusMessage = "Successfully created user: \(result?.user.uid ?? "")"
             
-            self.getEmptyProfileImageUrl()
+            if image != nil{
+                self.persistImageToStorage()
+            }else{
+                self.getEmptyProfileImageUrl()
+            }
         }
     }
     
-//    private func persistImageToStorage(){
-//        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
-//        let ref = FirebaseManager.shared.storage.reference(withPath: uid)
-//        guard let imageData = Image("blank-profile-picture").jpegData(withCompressionQuality: 0.5, actions: <#T##UIGraphicsImageRenderer.DrawingActions#>)
-//        
-//    }
+    private func persistImageToStorage(){
+        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
+        let ref = FirebaseManager.shared.storage.reference(withPath: uid)
+        guard let imageData = self.image?.jpegData(compressionQuality: 0.5) else{ return }
+        ref.putData(imageData, metadata: nil){ metadata, err in
+            if let err = err{
+                self.loginStatusMessage = "Failed to push image to Storage: \(err)"
+                print(err)
+                return
+            }
+            
+            ref.downloadURL { url, error in
+                if let error = error{
+                    print("Failed to retrieve downloadURL: \(error)")
+                    return
+                }
+                
+                guard let url = url else { return }
+                self.storeUserInformation(imageProfileUrl: url)
+            }
+        }
+        
+    }
     
     private func getEmptyProfileImageUrl(){
         let ref = FirebaseManager.shared.storage.reference(withPath: "blank-profile-picture.png")

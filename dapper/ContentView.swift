@@ -28,7 +28,10 @@ struct ContentView: View {
             NavigationStack{
                 VStack() {
                     Spacer()
-                    Image(systemName: "person.fill")
+                    Image("DapperLogo")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 100, height: 100)
                     Spacer()
                     VStack(spacing: 10){
                         
@@ -68,9 +71,6 @@ struct ContentView: View {
                         
                     }
                     .padding(12)
-                    
-                    Text(self.loginStatusMessage)
-                        .foregroundColor(.red)
                     
                     Spacer()
                     
@@ -113,4 +113,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        .environmentObject(UserLogIn())
 }

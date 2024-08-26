@@ -34,6 +34,8 @@ class CreateNewMessageViewModel: ObservableObject {
 
 struct CreateNewMessageView: View {
     
+    let didSelectNewUser: (ChatUser) -> ()
+    
     @Environment(\.dismiss) var dismiss
     
     @ObservedObject var vm = CreateNewMessageViewModel()
@@ -42,35 +44,33 @@ struct CreateNewMessageView: View {
         NavigationStack{
             ScrollView{
                 ForEach(vm.users){user in
-                    HStack{
-                        WebImage(url: URL(string: user.profileImageUrl))
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 50, height: 50)
-                            .clipped()
-                            .clipShape(Circle())
-                            .overlay(RoundedRectangle(cornerRadius: 50)
-                                .stroke(Color(.label), lineWidth: 2))
-                        Text("\(user.email)")
-                        Spacer()
-                    }.padding(.horizontal)
+                    Button{
+                        dismiss()
+                        didSelectNewUser(user)
+                    }label: {
+                        HStack{
+                            WebImage(url: URL(string: user.profileImageUrl))
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 50, height: 50)
+                                .clipped()
+                                .clipShape(Circle())
+                                .overlay(RoundedRectangle(cornerRadius: 50)
+                                    .stroke(Color(.label), lineWidth: 2))
+                            Text("\(user.email)")
+                                .foregroundStyle(Color(.label))
+                            Spacer()
+                        }.padding(.horizontal)
+                    }
                     Divider()
                         .padding(.vertical, 8)
                 }
             }.navigationTitle("New Message")
-                .toolbar{
-                    ToolbarItemGroup(placement: .topBarLeading) {
-                        Button{
-                            dismiss()
-                        }label: {
-                            Text("Cancel")
-                        }
-                    }
-                }
         }
     }
 }
 
 #Preview {
-    CreateNewMessageView()
+    //CreateNewMessageView()
+    HomeView()
 }
