@@ -1,10 +1,13 @@
 # DAPPER
-![screenshot](https://github.com/micvo25/dapper/blob/main/dapperScreenshot_optimized.png)
-
+<div align="center">
+	<img src="dapperScreenshot_optimized.png">
+</div>
 Welcome to dapper!
 Inspired by HBO's hit comedy TV-show "Silicon Valley", dapper is an app that does just one thing: sends daps to your friends!
 
-![screenrecord](https://github.com/micvo25/dapper/blob/main/dapperScreenRecord.gif)
+<div align="center">
+	<img src="dapperScreenRecord.gif">
+</div>
 
 ## Features
 
